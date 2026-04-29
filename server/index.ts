@@ -34,9 +34,14 @@ async function main() {
 
   app.get("/api/models", async (_req, res) => {
     try {
+      const apiKey = process.env.ANTHROPIC_API_KEY;
+      if (!apiKey) {
+        throw new Error("ANTHROPIC_API_KEY is not set. Please add it to your environment variables.");
+      }
+
       const response = await fetch("https://api.anthropic.com/v1/models", {
         headers: {
-          "x-api-key": process.env.ANTHROPIC_API_KEY!,
+          "x-api-key": apiKey,
           "anthropic-version": "2023-06-01",
         },
       });

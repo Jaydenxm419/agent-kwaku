@@ -238,6 +238,6 @@ export default defineSchema({
   }).index("by_profile_id", ["profileId"]),
 
   settings: defineTable({
-    activeModel: v.string(),
+    activeModel: v.optional(v.string()),
   }),
 });

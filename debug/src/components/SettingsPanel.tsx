@@ -31,11 +31,17 @@ export function SettingsPanel({ isDark }: { isDark: boolean }) {
   const activeModel = useQuery(api.settings.getActiveModel);
   const setActiveModelMutation = useMutation(api.settings.setActiveModel);
 
+  // Use a fallback while loading or if no model is set
+  const currentModelId = activeModel ?? "claude-3-5-sonnet-latest";
+
   useEffect(() => {
     async function fetchModels() {
       try {
         const res = await fetch("http://localhost:3456/api/models");
-        if (!res.ok) throw new Error("Failed to fetch models");
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || "Failed to fetch models");
+        }
         const data = await res.json();
         setModels(data.data || []);
       } catch (err) {
@@ -58,7 +64,7 @@ export function SettingsPanel({ isDark }: { isDark: boolean }) {
     }
   };
 
-  const selectedModelData = models.find((m) => m.id === activeModel);
+  const selectedModelData = models.find((m) => m.id === currentModelId);
 
   return (
     <div className="max-w-4xl space-y-8 pb-20">
@@ -91,7 +97,7 @@ export function SettingsPanel({ isDark }: { isDark: boolean }) {
             </label>
             <div className="relative">
               <select
-                value={activeModel ?? ""}
+                value={currentModelId}
                 onChange={(e) => handleModelChange(e.target.value)}
                 disabled={loading || saving}
                 className={`w-full appearance-none px-4 py-3 rounded-xl border outline-none transition-all ${
@@ -100,7 +106,9 @@ export function SettingsPanel({ isDark }: { isDark: boolean }) {
                     : "bg-slate-50 border-slate-200 text-slate-800 focus:border-sky-500/50"
                 }`}
               >
-                {!activeModel && <option value="">Select a model...</option>}
+                {activeModel === undefined && (
+                  <option value={currentModelId}>Loading active model...</option>
+                )}
                 {models.map((m) => (
                   <option key={m.id} value={m.id}>
                     {m.display_name} ({m.id})
