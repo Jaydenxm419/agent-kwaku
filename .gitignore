@@ -15,7 +15,6 @@ data/
 *.sqlite-journal
 .vite/
 # local development only
-debug/
 skills-lock.json
 .agents/skills/
 GEMINI.md
