@@ -4,21 +4,28 @@ import type { SectionInput } from "../index.js";
 
 export function renderWeather(section: SectionInput): string {
   const lines = section.content.split("\n").filter(Boolean);
-  const linesHtml = lines
-    .map((l) => `<p style="margin:0 0 6px;font-size:15px;color:${theme.colors.textPrimary};">${escapeHtml(l)}</p>`)
-    .join("");
+  const [primary, ...details] = lines;
+  const detailsHtml = details.length
+    ? details
+        .map(
+          (d) =>
+            `<p style="margin:6px 0 0;font-family:${theme.fonts.sans};font-size:13px;color:${theme.colors.onSurfaceVariant};line-height:1.5;">${escapeHtml(d)}</p>`,
+        )
+        .join("")
+    : "";
   return `
 <tr>
-  <td style="padding:20px 24px 0;">
-    ${sectionCard(section.title, linesHtml)}
+  <td style="padding:28px 36px 0;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"
+           style="background-color:${theme.colors.surface};border-radius:${theme.radius.lg};overflow:hidden;">
+      <tr>
+        <td style="padding:22px 26px 22px;">
+          <p style="margin:0 0 14px;font-family:${theme.fonts.label};font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:${theme.colors.muted};">${escapeHtml(section.title)}</p>
+          <p style="margin:0;font-family:${theme.fonts.serif};font-size:22px;font-weight:600;color:${theme.colors.onSurface};line-height:1.3;">${escapeHtml(primary ?? "")}</p>
+          ${detailsHtml}
+        </td>
+      </tr>
+    </table>
   </td>
 </tr>`;
-}
-
-function sectionCard(title: string, bodyHtml: string): string {
-  return `
-<div style="background-color:${theme.colors.surface};border-radius:${theme.radius};padding:20px 22px;border:1px solid ${theme.colors.border};">
-  <p style="margin:0 0 12px;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:${theme.colors.textMuted};">${escapeHtml(title)}</p>
-  ${bodyHtml}
-</div>`;
 }

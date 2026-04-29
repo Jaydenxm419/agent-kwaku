@@ -5,13 +5,13 @@ import type { SectionInput } from "../index.js";
 export function renderGreeting(section: SectionInput): string {
   return `
 <tr>
-  <td style="background-color:${theme.colors.accent};padding:36px 32px 32px;">
-    <p style="margin:0 0 6px;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7);">
+  <td style="background:${theme.colors.primaryGradient};padding:44px 40px 40px;">
+    <p style="margin:0 0 10px;font-family:${theme.fonts.label};font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.65);">
       ${escapeHtml(section.title)}
     </p>
-    <p style="margin:0;font-size:26px;font-weight:700;color:#ffffff;line-height:1.3;">
+    <h1 style="margin:0;font-family:${theme.fonts.serif};font-size:30px;font-weight:700;line-height:1.25;color:#ffffff;letter-spacing:-.01em;">
       ${escapeHtml(section.content)}
-    </p>
+    </h1>
   </td>
 </tr>`;
 }
