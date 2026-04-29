@@ -1,6 +1,7 @@
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import { api } from "../convex/_generated/api.js";
 import { convex } from "./convex-client.js";
+import { getActiveModel } from "./model-utils.js";
 import { broadcast } from "./broadcast.js";
 import { aggregateUsageFromResult, EMPTY_USAGE, type UsageTotals } from "./usage.js";
 
@@ -97,8 +98,7 @@ interface Challenge {
   severity: "low" | "medium" | "high";
 }
 
-const ADVERSARY_MODEL = process.env.BOOP_ADVERSARY_MODEL ?? "claude-haiku-4-5";
-const DEFAULT_MODEL = process.env.BOOP_MODEL ?? "claude-sonnet-4-6";
+const ADVERSARY_MODEL = process.env.BOOP_ADVERSARY_MODEL ?? "claude-3-5-haiku-latest";
 
 interface Decision {
   proposalIndex: number;
@@ -115,16 +115,17 @@ interface Applied {
 async function runLlm(
   systemPrompt: string,
   userPrompt: string,
-  model: string = DEFAULT_MODEL,
+  model?: string,
 ): Promise<{ buffer: string; usage: UsageTotals; durationMs: number }> {
   const started = Date.now();
+  const requestedModel = model ?? (await getActiveModel());
   let buffer = "";
   let usage: UsageTotals = { ...EMPTY_USAGE };
   for await (const msg of query({
     prompt: userPrompt,
     options: {
       systemPrompt,
-      model,
+      model: requestedModel,
       permissionMode: "bypassPermissions",
     },
   })) {
@@ -133,7 +134,7 @@ async function runLlm(
         if (block.type === "text") buffer += block.text;
       }
     } else if (msg.type === "result") {
-      usage = aggregateUsageFromResult(msg, model);
+      usage = aggregateUsageFromResult(msg, requestedModel);
     }
   }
   return { buffer, usage, durationMs: Date.now() - started };

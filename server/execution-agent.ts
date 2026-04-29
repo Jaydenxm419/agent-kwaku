@@ -1,6 +1,7 @@
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import { api } from "../convex/_generated/api.js";
 import { convex } from "./convex-client.js";
+import { getActiveModel } from "./model-utils.js";
 import { broadcast } from "./broadcast.js";
 import { buildMcpServersForIntegrations, listIntegrations } from "./integrations/registry.js";
 import { createDraftStagingMcp } from "./draft-tools.js";
@@ -109,7 +110,7 @@ export async function spawnExecutionAgent(opts: SpawnOptions): Promise<SpawnResu
   let status: "completed" | "failed" | "cancelled" = "completed";
   let errorMsg: string | undefined;
 
-  const requestedModel = process.env.BOOP_MODEL ?? "claude-sonnet-4-6";
+  const requestedModel = await getActiveModel();
   try {
     for await (const msg of query({
       prompt: opts.task,

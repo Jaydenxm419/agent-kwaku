@@ -32,6 +32,26 @@ async function main() {
   app.use("/sendblue", createSendblueRouter());
   app.use("/composio", createComposioRouter());
 
+  app.get("/api/models", async (_req, res) => {
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/models", {
+        headers: {
+          "x-api-key": process.env.ANTHROPIC_API_KEY!,
+          "anthropic-version": "2023-06-01",
+        },
+      });
+      if (!response.ok) {
+        const err = await response.text();
+        throw new Error(`Anthropic API error: ${err}`);
+      }
+      const data = await response.json();
+      res.json(data);
+    } catch (err) {
+      console.error("[models] fetch failed", err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
   app.post("/agents/:id/cancel", (req, res) => {
     const ok = cancelAgent(req.params.id);
     res.json({ ok });

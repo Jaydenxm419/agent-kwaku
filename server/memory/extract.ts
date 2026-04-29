@@ -1,6 +1,7 @@
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import { api } from "../../convex/_generated/api.js";
 import { convex } from "../convex-client.js";
+import { getActiveModel } from "../model-utils.js";
 import { embed } from "../embeddings.js";
 import { aggregateUsageFromResult, EMPTY_USAGE, type UsageTotals } from "../usage.js";
 import { SEGMENT_DEFAULTS, makeMemoryId, type MemorySegment } from "./types.js";
@@ -44,7 +45,7 @@ export async function extractAndStore(opts: {
   turnId: string;
 }): Promise<void> {
   const started = Date.now();
-  const requestedModel = process.env.BOOP_MODEL ?? "claude-sonnet-4-6";
+  const requestedModel = await getActiveModel();
   try {
     const payload = `USER: ${opts.userMessage}\n\nASSISTANT: ${opts.assistantReply}`;
     let buffer = "";

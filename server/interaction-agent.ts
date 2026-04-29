@@ -2,6 +2,7 @@ import { query, tool, createSdkMcpServer } from "@anthropic-ai/claude-agent-sdk"
 import { z } from "zod";
 import { api } from "../convex/_generated/api.js";
 import { convex } from "./convex-client.js";
+import { getActiveModel } from "./model-utils.js";
 import { createMemoryMcp } from "./memory/tools.js";
 import { extractAndStore } from "./memory/extract.js";
 import { availableIntegrations, spawnExecutionAgent } from "./execution-agent.js";
@@ -222,7 +223,7 @@ export async function handleUserMessage(opts: HandleOpts): Promise<string> {
   const log = (msg: string) => console.log(`[turn ${tag}] ${msg}`);
 
   const turnStart = Date.now();
-  const requestedModel = process.env.BOOP_MODEL ?? "claude-sonnet-4-6";
+  const requestedModel = await getActiveModel();
   let reply = "";
   let usage: UsageTotals = { ...EMPTY_USAGE };
   try {
@@ -230,7 +231,7 @@ export async function handleUserMessage(opts: HandleOpts): Promise<string> {
       prompt,
       options: {
         systemPrompt,
-        model: process.env.BOOP_MODEL ?? "claude-sonnet-4-6",
+        model: requestedModel,
         mcpServers: {
           "boop-memory": memoryServer,
           "boop-spawn": spawnServer,
