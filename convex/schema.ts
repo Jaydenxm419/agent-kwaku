@@ -216,4 +216,24 @@ export default defineSchema({
   })
     .index("by_automation", ["automationId"])
     .index("by_run_id", ["runId"]),
+
+  briefConfigs: defineTable({
+    profileId: v.string(),
+    recipientEmail: v.string(),
+    timezone: v.string(),
+    sections: v.array(v.object({
+      type: v.union(
+        v.literal("greeting"),
+        v.literal("weather"),
+        v.literal("calendar"),
+        v.literal("tasks"),
+        v.literal("news"),
+        v.literal("quote"),
+      ),
+      enabled: v.boolean(),
+      order: v.number(),
+      config: v.optional(v.string()),
+    })),
+    updatedAt: v.number(),
+  }).index("by_profile_id", ["profileId"]),
 });

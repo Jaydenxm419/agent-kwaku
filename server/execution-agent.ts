@@ -44,7 +44,8 @@ Style:
 
 Safety:
 - Anything that sends a message, creates an event, or takes an external action: call save_draft with a JSON payload instead of the real send/create tool. Return the summary so the interaction agent can show it to the user.
-- Only the interaction agent's send_draft tool commits. You never commit.`;
+- AUTOMATION EXCEPTION: if this task begins with AUTOMATION "<name>": you are executing a pre-approved scheduled task. Call real action tools directly (e.g. GMAIL_SEND_EMAIL) — do NOT use save_draft.
+- Only the interaction agent's send_draft tool commits interactive drafts. You never commit interactive tasks.`;
 
 export interface SpawnOptions {
   task: string;
