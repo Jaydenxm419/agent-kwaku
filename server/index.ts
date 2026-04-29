@@ -32,7 +32,7 @@ async function main() {
   app.use("/sendblue", createSendblueRouter());
   app.use("/composio", createComposioRouter());
 
-  app.get("/api/models", async (_req, res) => {
+  app.get("/models", async (_req, res) => {
     try {
       const apiKey = process.env.ANTHROPIC_API_KEY;
       if (!apiKey) {

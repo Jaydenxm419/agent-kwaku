@@ -37,7 +37,7 @@ export function SettingsPanel({ isDark }: { isDark: boolean }) {
   useEffect(() => {
     async function fetchModels() {
       try {
-        const res = await fetch("http://localhost:3456/api/models");
+        const res = await fetch("/api/models");
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
           throw new Error(errData.error || "Failed to fetch models");
